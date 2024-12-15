@@ -24,13 +24,21 @@ class AdminController {
         $totalLinks = $app['dao.link']->countAll();
         $links = $app['dao.link']->findPaginated($limit, $offset);
         $totalPages = ceil($totalLinks / $limit);
-       
-        $users = $app['dao.user']->findAll();
+        
+        $userPage = $request->query->get('user_page', 1);
+        $userlimit = 15;
+        $userOffset = ($userPage - 1) * $userlimit;
+        $totalUsers = $app['dao.user']->countAllUsers();
+        $users = $app['dao.user']->findPaginatedUsers($userlimit, $userOffset);
+        $totalUsersPages = ceil($totalUsers / $userlimit);
+
         return $app['twig']->render('admin.html.twig', array(
             'links' => $links,
             'users' => $users
             'totalPages' => $totalPages,
             'currentPage' => $page,
+            'totalPagesUsers' => $totalUsersPages,
+            'currentUserPage' => $userPage,
         ));
     }
 
