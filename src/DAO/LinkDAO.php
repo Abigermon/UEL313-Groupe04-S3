@@ -45,6 +45,29 @@ class LinkDAO extends DAO
         }
         return $_links;
     }
+    
+    public function findPaginated($limit, $offset) {
+        $sql = "
+            SELECT *
+            FROM tl_liens
+            ORDER BY lien_id DESC
+            LIMIT :limit OFFSET :offset
+        ";
+        $result = $this->getDb()->fetchAll($sql, [ 'limit' => (int) $limit, 'offset' => (int) $offset, ]);
+        $links = [];
+        foreach ($result as $row) {
+            $linkId = $row['lien_id'];
+            $links[$linkId] = $this->buildDomainObject($row);
+        }
+        return $links;
+    }
+    public function countAll() {
+        $sql = "SELECT COUNT(*) AS total FROM tl_liens";
+        $result = $this->getDb()->fetchAssoc($sql);
+        return $result['total'];
+    }
+
+    
 
     /**
      * Returns a link matching the supplied id.
